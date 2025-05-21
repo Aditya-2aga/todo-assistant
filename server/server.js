@@ -6,6 +6,9 @@ import todoRoutes from './routes/todos.js';
 // The db.js doesn't export a default, but its execution initializes the supabase client.
 // We import it here to ensure it runs and initializes supabase client if it hasn't already.
 import './db.js'; 
+import cors from 'cors';
+app.use(cors());
+
 
 dotenv.config();
 

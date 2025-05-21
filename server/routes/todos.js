@@ -1,7 +1,10 @@
 // server/routes/todos.js
 import express from 'express';
 import { supabase } from '../db.js';
-import axios from 'axios'; // For Slack Webhook
+import axios from 'axios';
+import cors from 'cors';
+app.use(cors());
+ // For Slack Webhook
 // Note: Gemini API will be called using fetch, which is built-in to Node.js v18+
 import dotenv from 'dotenv';
 
