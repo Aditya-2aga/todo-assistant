@@ -1,18 +1,12 @@
-// server/routes/todos.js
 import express from 'express';
 import { supabase } from '../db.js';
 import axios from 'axios';
-import cors from 'cors';
-app.use(cors());
- // For Slack Webhook
-// Note: Gemini API will be called using fetch, which is built-in to Node.js v18+
 import dotenv from 'dotenv';
 
 dotenv.config();
 
 const router = express.Router();
 
-// --- Helper function to call Gemini API ---
 async function generateSummaryWithGemini(todosText) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
@@ -27,10 +21,10 @@ async function generateSummaryWithGemini(todosText) {
   const payload = {
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
     generationConfig: {
-      temperature: 0.5, // Adjust for creativity vs. factualness
+      temperature: 0.5,
       topK: 1,
       topP: 1,
-      maxOutputTokens: 250, // Adjust as needed
+      maxOutputTokens: 250,
     },
   };
 
@@ -61,14 +55,10 @@ async function generateSummaryWithGemini(todosText) {
     }
   } catch (error) {
     console.error('Error calling Gemini API:', error);
-    throw error; // Re-throw to be caught by the route handler
+    throw error;
   }
 }
 
-
-// --- API Endpoints ---
-
-// GET /api/todos - Fetch all todos
 router.get('/', async (req, res) => {
   try {
     const { data, error } = await supabase
@@ -86,7 +76,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// POST /api/todos - Add a new todo
 router.post('/', async (req, res) => {
   const { title } = req.body;
   if (!title) {
@@ -97,8 +86,8 @@ router.post('/', async (req, res) => {
     const { data, error } = await supabase
       .from('todos')
       .insert([{ title, completed: false }])
-      .select() // Return the inserted row
-      .single(); // Expect a single row back
+      .select()
+      .single();
 
     if (error) {
       console.error('Supabase error adding todo:', error);
@@ -110,7 +99,6 @@ router.post('/', async (req, res) => {
   }
 });
 
-// PUT /api/todos/:id - Update a todo (e.g., mark as completed)
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
   const { title, completed } = req.body;
@@ -122,7 +110,6 @@ router.put('/:id', async (req, res) => {
   const updateData = {};
   if (typeof title !== 'undefined') updateData.title = title;
   if (typeof completed !== 'undefined') updateData.completed = completed;
-
 
   try {
     const { data, error } = await supabase
@@ -145,7 +132,6 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// DELETE /api/todos/:id - Delete a todo
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
 
@@ -154,22 +140,20 @@ router.delete('/:id', async (req, res) => {
       .from('todos')
       .delete()
       .eq('id', id)
-      .select() // Returns the deleted record(s)
-      .single(); // Expect a single record or null if not found
+      .select()
+      .single();
 
     if (error) {
       console.error('Supabase error deleting todo:', error);
       throw error;
     }
     
-    // Supabase delete returns the deleted item. If `data` is null and no error, it means not found.
-    if (!data && !error) { // Check if data is null and no error occurred
+    if (!data && !error) {
         return res.status(404).json({ error: 'Todo not found or already deleted' });
     }
 
     res.status(200).json({ message: 'Todo deleted successfully', deletedTodo: data });
   } catch (err) {
-    // Handle cases where the item might not exist, which Supabase might not treat as a top-level error
     if (err.message.includes("JSON object requested, multiple (or no) rows returned")) {
         return res.status(404).json({ error: 'Todo not found' });
     }
@@ -177,7 +161,6 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// POST /api/summarize - Summarize pending todos and send to Slack
 router.post('/summarize', async (req, res) => {
   const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL;
 
@@ -189,7 +172,6 @@ router.post('/summarize', async (req, res) => {
   }
 
   try {
-    // 1. Fetch pending todos from Supabase
     const { data: pendingTodos, error: fetchError } = await supabase
       .from('todos')
       .select('title')
@@ -203,17 +185,14 @@ router.post('/summarize', async (req, res) => {
 
     if (!pendingTodos || pendingTodos.length === 0) {
       const noPendingMessage = 'No pending todos to summarize.';
-      // Optionally send this to Slack too
       await axios.post(slackWebhookUrl, { text: `Todo Summary:\n${noPendingMessage}` });
       return res.json({ message: noPendingMessage, summary: noPendingMessage, slackSent: true });
     }
 
     const todosText = pendingTodos.map(todo => `- ${todo.title}`).join('\n');
 
-    // 2. Generate summary using Gemini API
     const summary = await generateSummaryWithGemini(todosText);
 
-    // 3. Post summary to Slack
     const slackMessage = {
       text: `📝 *Todo Summary Assistant* 📝\n\nHere's a summary of your pending tasks:\n\n${summary}`,
       blocks: [
@@ -263,7 +242,7 @@ router.post('/summarize', async (req, res) => {
     res.status(500).json({ 
         error: 'Failed to generate summary or send to Slack.', 
         details: err.message,
-        slackSent: false // Indicate Slack sending might have failed
+        slackSent: false
     });
   }
 });

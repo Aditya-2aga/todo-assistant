@@ -1,4 +1,3 @@
-// server/db.js
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 
@@ -11,17 +10,12 @@ if (!supabaseUrl || !supabaseAnonKey) {
   console.error(
     'Supabase URL or Anon Key is missing. Please check your .env file.'
   );
-  // process.exit(1); // Optionally exit if Supabase is critical for startup
 }
 
-// Create a single supabase client for interacting with your database
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// Test Supabase connection (optional)
 async function testSupabaseConnection() {
   try {
-    // Try to fetch a small amount of data or check status
-    // For example, trying to fetch from a non-existent table to see if client is configured
     const { data, error } = await supabase.from('todos').select('*').limit(1);
     if (error && error.message.includes('relation "todos" does not exist')) {
         console.log('Supabase client configured. Table "todos" not found yet, which is expected if not created.');
@@ -35,5 +29,3 @@ async function testSupabaseConnection() {
   }
 }
 
-// You might want to call this only during development or specific debug modes
-// testSupabaseConnection();
