@@ -17,6 +17,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [summary, setSummary] = useState('');
   const [error, setError] = useState('');
+  const [filter, setFilter] = useState('all'); // 'all' | 'active' | 'completed'
 
   useEffect(() => {
     fetchTodos();
@@ -85,6 +86,14 @@ function App() {
     setLoading(false);
   }
 
+  const filteredTodos = todos.filter(todo => {
+    if (filter === 'active') return !todo.completed;
+    if (filter === 'completed') return todo.completed;
+    return true;
+  });
+
+  const activeCount = todos.filter(todo => !todo.completed).length;
+
   return (
     <div className="min-h-screen bg-gradient-to-tr from-pink-500 to-purple-700 flex items-center justify-center p-4">
       <div className="w-full max-w-xl bg-gray-900 text-white rounded-lg shadow-xl p-6">
@@ -115,8 +124,31 @@ function App() {
         {error && <div className="text-red-400 mb-2">{error}</div>}
         {loading && <Loader2 className="animate-spin text-purple-400 mx-auto mb-4" size={24} />}
 
+        {/* Filter Buttons */}
+        <div className="flex justify-center gap-4 mb-4">
+          <button
+            className={`px-3 py-1 rounded ${filter === 'all' ? 'bg-purple-600 text-white' : 'bg-gray-700 text-gray-300'} transition`}
+            onClick={() => setFilter('all')}
+          >
+            All
+          </button>
+          <button
+            className={`px-3 py-1 rounded ${filter === 'active' ? 'bg-purple-600 text-white' : 'bg-gray-700 text-gray-300'} transition`}
+            onClick={() => setFilter('active')}
+          >
+            Active
+          </button>
+          <button
+            className={`px-3 py-1 rounded ${filter === 'completed' ? 'bg-purple-600 text-white' : 'bg-gray-700 text-gray-300'} transition`}
+            onClick={() => setFilter('completed')}
+          >
+            Completed
+          </button>
+        </div>
+
+        {/* Todo List */}
         <ul className="space-y-3">
-          {todos.map(todo => (
+          {filteredTodos.map(todo => (
             <li
               key={todo.id}
               className="flex items-center justify-between bg-gray-800 rounded px-4 py-3 hover:bg-gray-700 transition"
@@ -144,6 +176,12 @@ function App() {
           ))}
         </ul>
 
+        {/* Active Task Count */}
+        <div className="mt-4 text-sm text-gray-400 text-center">
+          {activeCount} task{activeCount !== 1 ? 's' : ''} left to complete
+        </div>
+
+        {/* Summary Button */}
         <div className="mt-6 text-center">
           <button
             className="flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold px-5 py-3 rounded-lg hover:scale-105 transition disabled:opacity-50"
@@ -155,6 +193,7 @@ function App() {
           </button>
         </div>
 
+        {/* Summary Output */}
         {summary && (
           <div className="mt-6 bg-gray-800 text-purple-100 p-4 rounded border border-purple-600">
             <h2 className="text-lg font-semibold mb-2">📌 Summary:</h2>
