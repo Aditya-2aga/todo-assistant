@@ -17,7 +17,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [summary, setSummary] = useState('');
   const [error, setError] = useState('');
-  const [filter, setFilter] = useState('all'); // 'all' | 'active' | 'completed'
+  const [filter, setFilter] = useState('all');
 
   useEffect(() => {
     fetchTodos();
@@ -124,7 +124,6 @@ function App() {
         {error && <div className="text-red-400 mb-2">{error}</div>}
         {loading && <Loader2 className="animate-spin text-purple-400 mx-auto mb-4" size={24} />}
 
-        {/* Filter Buttons */}
         <div className="flex justify-center gap-4 mb-4">
           <button
             className={`px-3 py-1 rounded ${filter === 'all' ? 'bg-purple-600 text-white' : 'bg-gray-700 text-gray-300'} transition`}
@@ -146,7 +145,6 @@ function App() {
           </button>
         </div>
 
-        {/* Todo List */}
         <ul className="space-y-3">
           {filteredTodos.map(todo => (
             <li
@@ -176,12 +174,10 @@ function App() {
           ))}
         </ul>
 
-        {/* Active Task Count */}
         <div className="mt-4 text-sm text-gray-400 text-center">
           {activeCount} task{activeCount !== 1 ? 's' : ''} left to complete
         </div>
 
-        {/* Summary Button */}
         <div className="mt-6 text-center">
           <button
             className="flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold px-5 py-3 rounded-lg hover:scale-105 transition disabled:opacity-50"
@@ -193,7 +189,6 @@ function App() {
           </button>
         </div>
 
-        {/* Summary Output */}
         {summary && (
           <div className="mt-6 bg-gray-800 text-purple-100 p-4 rounded border border-purple-600">
             <h2 className="text-lg font-semibold mb-2">📌 Summary:</h2>
