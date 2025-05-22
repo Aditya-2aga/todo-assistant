@@ -21,13 +21,13 @@ async function generateSummaryWithGemini(todosText) {
 Here is a list of pending to-do items:
 \n\n${todosText}
 
-Please analyze the tasks and provide a concise, structured summary that includes the following:
+Please analyze the tasks and provide a concise, structured summary that includes the following, but dont give the summary in these headings just write overall summary in a paragraph:
 
-1. **Overall Summary**: A brief overview of how many tasks are pending and the general workload.
-2. **High-Priority Tasks**: Identify tasks that seem urgent, important, or time-sensitive. Mention any that have explicit or implied deadlines.
-3. **Related or Grouped Tasks**: Group tasks that are logically related or dependent on each other.
-4. **Deadline Awareness**: Highlight any tasks that mention dates, times, or deadlines.
-5. **Recommendations**: Suggest what the user should consider doing next (e.g., tasks to tackle first, group similar tasks, delegate, etc.).
+1. Overall Summary: A brief overview of how many tasks are pending and the general workload.
+2. High-Priority Tasks: Identify tasks that seem urgent, important, or time-sensitive. Mention any that have explicit or implied deadlines.
+3. Related or Grouped Tasks: Group tasks that are logically related or dependent on each other.
+4. Deadline Awareness: Highlight any tasks that mention dates, times, or deadlines.
+5. Recommendations: Suggest what the user should consider doing next (e.g., tasks to tackle first, group similar tasks, delegate, etc.).
 
 Only include incomplete tasks. Ignore any completed items. Use clear, concise language suitable for posting in a Slack message.`;
 
