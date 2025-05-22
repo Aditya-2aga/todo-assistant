@@ -16,7 +16,20 @@ async function generateSummaryWithGemini(todosText) {
 
   const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
   
-  const prompt = `Please provide a concise summary of the following pending to-do items. Focus on the key tasks and overall workload. Do not include completed tasks in the summary. If there are no pending tasks, state that clearly. Pending tasks:\n\n${todosText}`;
+  const prompt = `You are a smart personal assistant summarizing pending to-do tasks for a user.
+
+Here is a list of pending to-do items:
+\n\n${todosText}
+
+Please analyze the tasks and provide a concise, structured summary that includes the following:
+
+1. **Overall Summary**: A brief overview of how many tasks are pending and the general workload.
+2. **High-Priority Tasks**: Identify tasks that seem urgent, important, or time-sensitive. Mention any that have explicit or implied deadlines.
+3. **Related or Grouped Tasks**: Group tasks that are logically related or dependent on each other.
+4. **Deadline Awareness**: Highlight any tasks that mention dates, times, or deadlines.
+5. **Recommendations**: Suggest what the user should consider doing next (e.g., tasks to tackle first, group similar tasks, delegate, etc.).
+
+Only include incomplete tasks. Ignore any completed items. Use clear, concise language suitable for posting in a Slack message.`;
 
   const payload = {
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
